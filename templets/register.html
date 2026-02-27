@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Register – ShopNest{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-icon">✨</div>
+            <h1>Create Account</h1>
+            <p>Join ShopNest and start shopping</p>
+        </div>
+
+        <form class="auth-form" method="POST" action="{{ url_for('register') }}" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="John Doe" required autocomplete="name" />
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="you@example.com" required
+                    autocomplete="email" />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password" placeholder="Min. 6 characters" required
+                        autocomplete="new-password" />
+                    <button type="button" class="toggle-pw" aria-label="Toggle password"
+                        onclick="togglePW('password', this)">👁</button>
+                </div>
+                <div class="strength-bar" id="strengthBar">
+                    <div class="strength-fill" id="strengthFill"></div>
+                </div>
+                <small class="strength-label" id="strengthLabel"></small>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+        </form>
+
+        <p class="auth-footer">
+            Already have an account?
+            <a href="{{ url_for('login') }}">Sign in</a>
+        </p>
+    </div>
+</section>
+
+{% block extra_js %}
+<script>
+    // Password strength meter
+    document.getElementById('password').addEventListener('input', function () {
+        const val = this.value;
+        const fill = document.getElementById('strengthFill');
+        const label = document.getElementById('strengthLabel');
+        let score = 0;
+        if (val.length >= 6) score++;
+        if (val.length >= 10) score++;
+        if (/[A-Z]/.test(val)) score++;
+        if (/[0-9]/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+        const levels = ['', 'Very Weak', 'Weak', 'Fair', 'Strong', 'Very Strong'];
+        const colors = ['', '#e74c3c', '#e67e22', '#f1c40f', '#2ecc71', '#27ae60'];
+        fill.style.width = `${(score / 5) * 100}%`;
+        fill.style.background = colors[score] || 'transparent';
+        label.textContent = levels[score] || '';
+    });
+</script>
+{% endblock %}
+{% endblock %}

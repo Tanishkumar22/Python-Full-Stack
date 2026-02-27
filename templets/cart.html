@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}My Cart – ShopNest{% endblock %}
+
+{% block content %}
+<section class="cart-section">
+    <h1 class="page-title">🛒 My Cart</h1>
+
+    <div class="cart-layout">
+        <!-- Cart Items -->
+        <div class="cart-items" id="cartItems">
+            <div class="loading-spinner" id="cartLoader">
+                <div class="spinner"></div>
+                <p>Loading cart…</p>
+            </div>
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="cart-summary" id="cartSummary">
+            <div class="summary-card">
+                <h2>Order Summary</h2>
+                <div class="summary-row">
+                    <span>Items</span>
+                    <span id="summaryCount">0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="summarySubtotal">₹0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span class="text-success">FREE</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-row summary-total">
+                    <span>Total</span>
+                    <span id="summaryTotal">₹0.00</span>
+                </div>
+                <button class="btn btn-primary btn-full" id="checkoutBtn">
+                    Proceed to Checkout
+                </button>
+                <a href="{{ url_for('index') }}" class="btn btn-outline btn-full" style="margin-top:0.5rem">
+                    Continue Shopping
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state hidden" id="emptyCart">
+        <div class="empty-icon">🛒</div>
+        <h2>Your cart is empty</h2>
+        <p>Add some products to get started!</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Shop Now</a>
+    </div>
+</section>
+
+<div class="toast" id="toast"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchCart();
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            showToast('Checkout coming soon!', 'info');
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}ShopNest – Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">Discover Amazing Products</h1>
+        <p class="hero-subtitle">Shop the best deals at unbeatable prices.</p>
+    </div>
+</section>
+
+<section class="products-section">
+    <div class="section-header">
+        <h2 class="section-title">Our Collection</h2>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search products..." autocomplete="off" />
+            <button id="searchBtn">🔍</button>
+        </div>
+    </div>
+
+    <div class="products-grid" id="productsGrid">
+        <!-- Products injected by JS -->
+        <div class="loading-spinner" id="productsLoader">
+            <div class="spinner"></div>
+            <p>Loading products…</p>
+        </div>
+    </div>
+
+    <div class="no-results hidden" id="noResults">
+        <div class="empty-state">🔍 No products found.</div>
+    </div>
+</section>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchProducts();
+
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            fetchProducts(document.getElementById('searchInput').value.trim());
+        });
+        document.getElementById('searchInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') fetchProducts(e.target.value.trim());
+        });
+    });
+</script>
+{% endblock %}

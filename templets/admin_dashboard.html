@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard – ShopNest{% endblock %}
+
+{% block content %}
+<section class="admin-section">
+    <div class="admin-header">
+        <h1>⚙️ Admin Dashboard</h1>
+        <p>Manage products, users, and cart data.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+        <button class="tab-btn active" data-tab="products">Products</button>
+        <button class="tab-btn" data-tab="users">Users</button>
+        <button class="tab-btn" data-tab="carts">Cart Data</button>
+    </div>
+
+    <!-- ─── PRODUCTS TAB ─── -->
+    <div class="tab-panel active" id="tab-products">
+        <div class="panel-header">
+            <h2>Product Management</h2>
+            <button class="btn btn-primary" id="addProductBtn">+ Add Product</button>
+        </div>
+
+        <!-- Add/Edit Product Form -->
+        <div class="product-form-card hidden" id="productFormCard">
+            <h3 id="productFormTitle">Add New Product</h3>
+            <form id="productForm">
+                <input type="hidden" id="editProductId" />
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="pName" placeholder="Product name" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Price (₹)</label>
+                        <input type="number" id="pPrice" placeholder="0.00" step="0.01" min="0" required />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="pDesc" rows="3" placeholder="Product description"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Image URL</label>
+                        <input type="url" id="pImage" placeholder="https://..." />
+                    </div>
+                    <div class="form-group">
+                        <label>Stock Quantity</label>
+                        <input type="number" id="pStock" placeholder="0" min="0" required />
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="saveProductBtn">Save Product</button>
+                    <button type="button" class="btn btn-outline" id="cancelProductBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Products Table -->
+        <div class="table-wrapper">
+            <table class="admin-table" id="productsTable">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody">
+                    <tr>
+                        <td colspan="5" class="table-loading">
+                            <div class="spinner"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ─── USERS TAB ─── -->
+    <div class="tab-panel hidden" id="tab-users">
+        <div class="panel-header">
+            <h2>Registered Users</h2>
+        </div>
+        <div class="table-wrapper">
+            <table class="admin-table" id="usersTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Joined</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr>
+                        <td colspan="5" class="table-loading">
+                            <div class="spinner"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ─── CARTS TAB ─── -->
+    <div class="tab-panel hidden" id="tab-carts">
+        <div class="panel-header">
+            <h2>All Cart Data</h2>
+        </div>
+        <div id="cartsContainer">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Loading…</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="toast" id="toast"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+                btn.classList.add('active');
+                document.getElementById('tab-' + tab).classList.remove('hidden');
+                if (tab === 'users') fetchAdminUsers();
+                if (tab === 'carts') fetchAdminCarts();
+                if (tab === 'products') fetchAdminProducts();
+            });
+        });
+
+        // Initial load
+        fetchAdminProducts();
+
+        // Add Product toggle
+        const formCard = document.getElementById('productFormCard');
+        document.getElementById('addProductBtn').addEventListener('click', () => {
+            document.getElementById('productFormTitle').textContent = 'Add New Product';
+            document.getElementById('editProductId').value = '';
+            document.getElementById('productForm').reset();
+            formCard.classList.remove('hidden');
+        });
+        document.getElementById('cancelProductBtn').addEventListener('click', () => {
+            formCard.classList.add('hidden');
+        });
+
+        // Product form submit
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveProduct();
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}ShopNest{% endblock %}</title>
+  <meta name="description" content="ShopNest - Your premium online shopping destination." />
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body>
+  <!-- ───────────── NAVBAR ───────────── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('index') }}" class="nav-brand">
+        <span class="brand-icon">🛒</span>
+        <span class="brand-text">ShopNest</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="{{ url_for('index') }}" class="nav-link">Products</a>
+
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('cart') }}" class="nav-link cart-link">
+          <span>Cart</span>
+          <span class="cart-badge" id="cart-count">0</span>
+        </a>
+        {% if current_user.is_admin() %}
+        <a href="{{ url_for('admin_dashboard') }}" class="nav-link admin-link">Admin</a>
+        {% endif %}
+        <span class="nav-user">Hi, {{ current_user.name.split()[0] }}</span>
+        <a href="{{ url_for('logout') }}" class="nav-btn btn-outline">Logout</a>
+        {% else %}
+        <a href="{{ url_for('login') }}" class="nav-btn btn-outline">Login</a>
+        <a href="{{ url_for('register') }}" class="nav-btn btn-primary">Register</a>
+        {% endif %}
+
+        <!-- Dark / Light Toggle -->
+        <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode" aria-label="Toggle theme">
+          <span class="toggle-icon sun">☀️</span>
+          <span class="toggle-icon moon">🌙</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ───────────── FLASH MESSAGES ───────────── -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flash-container" id="flashContainer">
+    {% for category, message in messages %}
+    <div class="flash flash-{{ category }}">
+      <span>{{ message }}</span>
+      <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <!-- ───────────── PAGE CONTENT ───────────── -->
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ───────────── FOOTER ───────────── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>© 2026 ShopNest. Built with ❤️ on Flask + Firebase.</span>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+
+</html>
